@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  role         Role
+  passwordHash String
+  jobs         Job[]
+}
+
+model Job {
+  id           Int       @id @default(autoincrement())
+  deviceId     String
+  operatorId   Int
+  operator     User      @relation(fields: [operatorId], references: [id])
+  status       JobStatus @default(QUEUED)
+  requestedAt  DateTime  @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+  cert         String?
+  publicKey    String?
+  privateKey   String?
+  error        String?
+
+  @@index([deviceId])
+}
+
+enum Role {
+  OPERATOR
+  ADMIN
+}
+
+enum JobStatus {
+  QUEUED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
