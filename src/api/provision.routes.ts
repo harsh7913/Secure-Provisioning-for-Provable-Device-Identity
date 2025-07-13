@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { checkRole } from '../utils/auth';
-import { createJobRecord, updateJobStatus } from '../services/provisioning.service';
-import { MockHSM } from '../hsm/MockHSM';
+import { createJobRecord } from '../services/provisioning.service';
+import { provisionQueue } from '../jobs/queue';
 
 const router = Router();
 
@@ -14,25 +14,26 @@ router.post('/', checkRole('operator'), async (req: Request, res: Response) => {
 
   try {
     const jobEntry = await createJobRecord(deviceId, operatorId);
-    const hsm = new MockHSM();
-    const { cert, publicKey } = await hsm.provisionDevice(deviceId);
 
-    await updateJobStatus(jobEntry.id, {
-      status: 'COMPLETED',
-      cert,
-      publicKey,
-    });
+    // ✅ Enqueue job instead of direct HSM call
+    await provisionQueue.add(
+      'provision',
+      {
+        jobId: jobEntry.id,
+        deviceId,
+        operatorId,
+      },
+      { jobId: jobEntry.id.toString() }
+    );
 
-    res.status(201).json({
-      message: 'Provisioning successful',
-      deviceId,
-      cert,
-      publicKey,
-      // ✅ No privateKey returned
+    return res.status(202).json({
+      message: 'Provisioning queued',
+      jobId: jobEntry.id,
+      status: 'QUEUED',
     });
   } catch (error) {
     console.error('❌ Provisioning error:', error);
-    res.status(500).json({ error: 'Provisioning failed' });
+    return res.status(500).json({ error: 'Provisioning failed' });
   }
 });
 
