@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const SECRET = process.env.JWT_SECRET || 'dev_secret';
+const SECRET = process.env.JWT_SECRET;
+if (!SECRET) throw new Error('Missing JWT_SECRET');
 
 export function verifyJWT(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Missing token' });
 
   try {
-    const decoded = jwt.verify(token, SECRET);
+    const decoded = jwt.verify(token, SECRET as jwt.Secret);
     (req as any).user = decoded;
     next();
   } catch (err) {
