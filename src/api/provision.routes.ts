@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { checkRole } from '../utils/auth';
-import { createJobRecord, updateJobStatus } from '../services/provisioning.service';
-import { MockHSM } from '../hsm/MockHSM';
+import { createJobRecord } from '../services/provisioning.service';
+import { provisionQueue } from '../jobs/queue';
 
 const router = Router();
 
@@ -13,31 +13,27 @@ router.post('/', checkRole('operator'), async (req: Request, res: Response) => {
   }
 
   try {
-    // Step 1: Create DB job record with QUEUED status
+    // Create job in DB
     const jobEntry = await createJobRecord(deviceId, operatorId);
 
-    // Step 2: Provision device using HSM
-    const hsm = new MockHSM(); // or use new ProductionHSM()
-    const { cert, publicKey, privateKey } = await hsm.provisionDevice(deviceId);
+    // Enqueue job in BullMQ
+    await provisionQueue.add(
+      'provision-device',
+      { deviceId, operatorId },
+      {
+        jobId: jobEntry.id.toString(),
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 3000 },
+      }
+    );
 
-    // Step 3: Update job record with cert and public key
-    await updateJobStatus(jobEntry.id, {
-      status: 'COMPLETED',
-      cert,
-      publicKey,
-    });
-
-    // Step 4: Return full material to client (one-time delivery of private key)
-    res.status(201).json({
-      message: 'Provisioning successful',
-      deviceId,
-      cert,
-      publicKey,
-      privateKey, // Not stored — returned only once
+    res.status(202).json({
+      message: 'Provisioning request accepted',
+      jobId: jobEntry.id,
     });
   } catch (error) {
-    console.error('❌ Provisioning error:', error);
-    res.status(500).json({ error: 'Provisioning failed' });
+    console.error('❌ Failed to enqueue provisioning job:', error);
+    res.status(500).json({ error: 'Provisioning enqueue failed' });
   }
 });
 
