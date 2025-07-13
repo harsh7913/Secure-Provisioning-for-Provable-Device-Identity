@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "ts-node-dev --respawn src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "worker": "ts-node src/jobs/worker.ts"
+
   },
   "dependencies": {
     "@prisma/client": "^6.11.1",
