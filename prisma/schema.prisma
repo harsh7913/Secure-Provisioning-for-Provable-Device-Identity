@@ -27,7 +27,6 @@ model Job {
   completedAt  DateTime?
   cert         String?
   publicKey    String?
-  privateKey   String?
   error        String?
 
   @@index([deviceId])
