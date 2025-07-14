@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -13,8 +13,8 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/admin/login`, {
-        username,
+      const res = await axios.post(`api/admin/login`, {
+        email,
         password,
       });
 
@@ -37,7 +37,7 @@ const LoginPage = () => {
             type="text"
             placeholder="Username"
             className="w-full mb-3 px-4 py-2 border rounded"
-            value={username}
+            value={email}
             onChange={(e) => setUsername(e.target.value)}
             required
           />

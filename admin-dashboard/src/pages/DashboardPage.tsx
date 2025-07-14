@@ -26,12 +26,13 @@ const DashboardPage = () => {
 
   const fetchLogs = async () => {
     try {
-      const res = await api.get('/admin/logs', {
+      const res = await api.get('api/admin/logs', {
         params: { deviceId, status },
       });
-      setLogs(res.data);
+      setLogs(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Failed to fetch logs');
+      setLogs([])
     }
   };
 

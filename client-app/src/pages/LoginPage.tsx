@@ -14,7 +14,7 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post('/login', { email, password });
+      const res = await api.post('/operator/login', { email, password });
       const { token, user } = res.data;
       login(token, user);
       toast.success('✅ Login successful');

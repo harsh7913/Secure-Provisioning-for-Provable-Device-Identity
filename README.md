@@ -149,12 +149,67 @@ View all provisioning logs. Supports filtering.
 
 ---
 
-## 📦 Submission Instructions
+## 🐳 Running PostgreSQL + Redis using Docker
 
-- ✅ Zip all contents (including this README).
-- ❌ Do NOT include `.env` with real secrets.
-- ✅ Include your resume in the zipped folder.
-- ✅ Email to:
-  - hiring@cypherock.com
-  - riya@cypherock.com
-  - akshit@cypherock.com
+If you prefer not to install PostgreSQL or Redis locally, you can use Docker:
+
+### 🛠 Docker Setup
+
+In the project root, ensure you have `docker-compose.yml` like this:
+
+```yaml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: secure_provisioning
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - "6379:6379"
+```
+
+### ▶ Start Services
+
+Run this command from the project root:
+
+```bash
+docker compose up -d
+```
+
+This will start PostgreSQL and Redis locally on:
+- PostgreSQL: `localhost:5432`
+- Redis: `localhost:6379`
+
+Update your `.env` file to match:
+```env
+DATABASE_URL="postgresql://postgres:admin@localhost:5432/secure_provisioning?schema=public"
+```
+
+You can now run Prisma and the backend as normal.
+
+
+---
+
+### 🖥 Run Backend (Two-Terminal Setup Required)
+
+1. **Terminal 1** – Start API server:
+```bash
+npm run dev
+```
+
+2. **Terminal 2** – Start worker queue processor:
+```bash
+npm run worker
+```
+
+Both must be running for provisioning requests to be processed properly.
