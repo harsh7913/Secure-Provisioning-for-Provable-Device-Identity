@@ -25,6 +25,22 @@ This project implements a secure, distributed provisioning system for smart devi
 
 ---
 
+## 🖼️ Screenshots
+
+### Admin Dashboard
+![Admin Dashboard](screens/admin-dashboard.png)
+
+### Operator Dashboard
+![Operator Dashboard](screens/operator-dashboard.png)
+
+### Operator Login
+![Operator Login](screens/operator-login.png)
+
+### Admin Login
+![Admin Login](screens/admin-login.png)
+
+---
+
 ## 🔐 Key Design Decisions
 
 ### 1. **Provable Identity**
