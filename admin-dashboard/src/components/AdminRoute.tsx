@@ -1,14 +1,15 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { ReactElement } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const AdminRoute = () => {
-  const { isAuthenticated, isAdmin } = useAuth();
+const AdminRoute = ({ children }: { children: ReactElement }) => {
+  const { token } = useAuth();
 
-  if (!isAuthenticated || !isAdmin) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return children;
 };
 
 export default AdminRoute;

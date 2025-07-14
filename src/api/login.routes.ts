@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 const SECRET = process.env.JWT_SECRET || 'dev_secret';
 
-router.post('/login', async (req, res) => {
+router.post('/admin/login', async (req, res) => {
   const { email, password } = req.body;
 
   console.log('📨 Incoming login request:', email);
