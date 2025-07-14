@@ -73,12 +73,7 @@ This project implements a secure, distributed provisioning system for smart devi
 
 ### 📁 Environment Setup
 
-1. Copy the example env file:
-   ```
-   cp .env.example .env
-   ```
-
-2. Ensure PostgreSQL and Redis are running locally.
+Ensure PostgreSQL and Redis are running locally.
 
 ---
 
