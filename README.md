@@ -33,6 +33,9 @@ This project implements a secure, distributed provisioning system for smart devi
 ### Operator Dashboard
 ![Operator Dashboard](screens/operator-dashboard.png)
 
+### Provision Device (Operator Panel)
+![Provision Device](screens/provision-device.png)
+
 ### Operator Login
 ![Operator Login](screens/operator-login.png)
 
